@@ -26,19 +26,15 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Ensure CodeQL CLI is available
-      - name: Setup CodeQL
-        uses: github/codeql-action/setup@v4
-
-      # Install Java toolchain if needed
-      - name: Set up Java for Java projects
+      # Install Java for Java analysis
+      - name: Set up Java
         if: matrix.language == 'java-kotlin'
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
 
-      # Initialize CodeQL
+      # Initialize CodeQL for all languages
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v4
         with:
@@ -51,14 +47,14 @@ jobs:
               - '**/node_modules/**'
               - '**/venv/**'
 
-      # Add an explicit build command only for Java
+      # Manual Java compilation (for single-file Java)
       - name: Build Java if applicable
         if: matrix.language == 'java-kotlin'
         run: |
           echo "Compiling Java files..."
           javac $(find . -name "*.java")
 
-      # Run the actual analysis
+      # Perform CodeQL Analysis
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v4
         with:
