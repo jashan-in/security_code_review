@@ -15,7 +15,7 @@ on:
 jobs:
   analyze:
     name: Analyze (${{ matrix.language }})
-    runs-on: ${{ (matrix.language == 'swift' && 'macos-latest') || 'ubuntu-latest' }}
+    runs-on: ubuntu-latest
     permissions:
       # Required for uploading results
       security-events: write
@@ -43,14 +43,20 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Initialize CodeQL tools for scanning
+      # Set up Java environment for Maven build
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      # Initialize CodeQL tools for scanning with extended security queries
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v4
         with:
           languages: ${{ matrix.language }}
           build-mode: ${{ matrix.build-mode }}
-          # You can specify custom queries here if desired:
-          # queries: security-extended,security-and-quality
+          queries: security-extended,security-and-quality
 
       # Manual build placeholder (only runs if build-mode = manual)
       - name: Run manual build steps
