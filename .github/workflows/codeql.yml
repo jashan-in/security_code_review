@@ -6,7 +6,7 @@ on:
   pull_request:
     branches: [ "main" ]
   schedule:
-    - cron: '36 23 * * 0'  # Runs weekly
+    - cron: '36 23 * * 0'
 
 jobs:
   analyze:
@@ -21,19 +21,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        include:
-          - language: python
-            build-mode: none
-          - language: java-kotlin
-            build-mode: autobuild
-          - language: javascript-typescript
-            build-mode: none
+        language: [ "python", "java-kotlin", "javascript-typescript" ]
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Setup Java only for the Java job
       - name: Set up Java
         if: matrix.language == 'java-kotlin'
         uses: actions/setup-java@v4
@@ -41,19 +34,19 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      # Initialize CodeQL with ALL available queries
+      # Initialize CodeQL
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v4
         with:
           languages: ${{ matrix.language }}
-          build-mode: ${{ matrix.build-mode }}
           queries: +security-extended,+security-and-quality,+security-and-quality-experimental
 
-      # Manual build step placeholder
-      - name: Run manual build steps
-        if: matrix.build-mode == 'manual'
-        run: echo "Manual build mode placeholder"
+      # Build step only for Java; others skip automatically
+      - name: Autobuild for compiled languages
+        if: matrix.language == 'java-kotlin'
+        uses: github/codeql-action/autobuild@v4
 
+      # Perform the CodeQL Analysis
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v4
         with:
