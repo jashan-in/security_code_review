@@ -49,13 +49,13 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      # Initialize CodeQL with extended and quality queries
+      # Initialize CodeQL with extended and quality query packs
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v4
         with:
           languages: ${{ matrix.language }}
           build-mode: ${{ matrix.build-mode }}
-          queries: +security-extended,+security-and-quality
+          queries: security-extended,security-and-quality
 
       # Manual build placeholder (only runs if build-mode = manual)
       - name: Run manual build steps
