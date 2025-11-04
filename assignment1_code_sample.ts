@@ -56,10 +56,11 @@ function saveToDb(data: string) {
         connection.end();
     });
 }
-
+#fix
 (async () => {
     const userInput = await getUserInput();
     const data = await getData();
     saveToDb(data);
     sendEmail('admin@example.com', 'User Input', userInput);
+
 })();
