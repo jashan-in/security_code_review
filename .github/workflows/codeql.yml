@@ -29,9 +29,7 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          # CodeQL supports the following language keywords:
-          # 'actions', 'c-cpp', 'csharp', 'go', 'java-kotlin', 'javascript-typescript',
-          # 'python', 'ruby', 'rust', 'swift'
+          # Supported languages
           - language: python
             build-mode: none
           - language: java-kotlin
@@ -43,20 +41,21 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Set up Java environment for Maven build
+      # Set up Java environment for Java builds (only runs for Java job)
       - name: Set up Java
+        if: matrix.language == 'java-kotlin'
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
 
-      # Initialize CodeQL tools for scanning with extended security queries
+      # Initialize CodeQL with extended and quality queries
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v4
         with:
           languages: ${{ matrix.language }}
           build-mode: ${{ matrix.build-mode }}
-          queries: security-extended,security-and-quality
+          queries: +security-extended,+security-and-quality
 
       # Manual build placeholder (only runs if build-mode = manual)
       - name: Run manual build steps
